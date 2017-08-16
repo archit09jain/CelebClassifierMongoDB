@@ -21,12 +21,13 @@ public class Main {
 
         BufferedImage inputImage= ImageIO.read(new FileInputStream(src));
         DigitalImageProcessing dip = new DigitalImageProcessing(src);
+
         List<Rect> masks = dip.findFaces();
         System.out.println("Masks Found");
         List<BufferedImage> extractedFaceImages = dip.getAllFaceImages(inputImage,masks);
         System.out.println("Faces Extracted");
 
-        extractedFaceImages = dip.convertToGrayScale(extractedFaceImages);
+        //extractedFaceImages = dip.convertToGrayScale(extractedFaceImages);
         System.out.println("Converted to Grayscal");
         System.out.println(extractedFaceImages.size());
 
@@ -63,20 +64,28 @@ public class Main {
             String path = "/Users/archit.j/Desktop/dataset/" + directories;
             File innerdir = new File(path);
 
+            //Iterator it = FileUtils.iterateFiles(new File("C:/"), null, false);
+
             File[] files = innerdir.listFiles(new FilenameFilter() {
                     public boolean accept(File dir, String name) {
                          return name.toLowerCase().endsWith(".jpg");
                     }
                 });
 
-            for(int i = 0;i<Math.min(files.length,50);i++) {
-                File file = files[i];
+            int i = 0;
+
+            for(File file: files) {
+
                 System.out.println(file);
                 String destination = "/Users/archit.j/Desktop/dataset2/" + directories;
                 String source = file.getAbsolutePath();
                 System.out.println(source);
                 storeCroppedDataset(source,destination,i);
                 System.out.println("DONE");
+                i =  i+1;
+
+                //if(i>10)
+                  //      break;
             }
         }
     }

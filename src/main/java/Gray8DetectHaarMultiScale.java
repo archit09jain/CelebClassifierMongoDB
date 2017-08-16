@@ -158,33 +158,42 @@ public class Gray8DetectHaarMultiScale extends PipelineStage {
             // now run Haar detection on each scaled image
             int nxLastFound = -hcc.getWidth();
             int nyLastFound = -hcc.getHeight();
-            while (!mgsi.isEmpty()) {
-                Gray8OffsetImage imSub = (Gray8OffsetImage) mgsi.getFront();
-                // if we've found a feature recently we skip forward until
-                // we're outside the masked region. There's no point rerunning
-                // the detector
-                if (imSub.getXOffset() > nxLastFound + hcc.getWidth() &&
-                        imSub.getYOffset() > nyLastFound + hcc.getHeight()) {
-                    if (hcc.eval(imSub)) {
-                        // Found something.
-                        nxLastFound = imSub.getXOffset();
-                        nyLastFound = imSub.getYOffset();
-                        // assign Byte.MAX_VALUE to the feature area so we don't
-                        // search it again
-                        result.add(new Rect(nxLastFound*nScale, nyLastFound*nScale,
-                                this.hcc.getWidth()*nScale,
-                                this.hcc.getHeight()*nScale));
 
-                        Gray8Rect gr = new Gray8Rect(nxLastFound,
-                                nyLastFound,
-                                this.hcc.getWidth(),
-                                this.hcc.getHeight(),
-                                Byte.MAX_VALUE);
-                        gr.push(imMask);
-                        imMask = (Gray8Image) gr.getFront();
+            try {
+                while (!mgsi.isEmpty()) {
+                    Gray8OffsetImage imSub = (Gray8OffsetImage) mgsi.getFront();
+                    // System.out.println("CHE");
+                    // if we've found a feature recently we skip forward until
+                    // we're outside the masked region. There's no point rerunning
+                    // the detector
+                    if (imSub.getXOffset() > nxLastFound + hcc.getWidth() &&
+                            imSub.getYOffset() > nyLastFound + hcc.getHeight()) {
+                        if (hcc.eval(imSub)) {
+                            // Found something.
+                            nxLastFound = imSub.getXOffset();
+                            nyLastFound = imSub.getYOffset();
+                            // assign Byte.MAX_VALUE to the feature area so we don't
+                            // search it again
+                            result.add(new Rect(nxLastFound * nScale, nyLastFound * nScale,
+                                    this.hcc.getWidth() * nScale,
+                                    this.hcc.getHeight() * nScale));
+
+                            Gray8Rect gr = new Gray8Rect(nxLastFound,
+                                    nyLastFound,
+                                    this.hcc.getWidth(),
+                                    this.hcc.getHeight(),
+                                    Byte.MAX_VALUE);
+                            gr.push(imMask);
+                            imMask = (Gray8Image) gr.getFront();
+                        }
                     }
                 }
+            }catch (Exception e) {
+                System.out.println("ERROOR");
+                System.out.println(e);
+
             }
+
             nScale = nScale * 256 / this.nScaleChange;
         }
         // Stretch imMask to original image size; this is the result

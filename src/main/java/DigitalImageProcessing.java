@@ -48,7 +48,9 @@ public class DigitalImageProcessing {
             RgbImage im = RgbImageJ2se.toRgbImage(inputImage);
             RgbAvgGray toGray = new RgbAvgGray();
             toGray.push(im);
+
             faces = detectHaar.pushAndReturn(toGray.getFront());
+
             Image i = detectHaar.getFront();
             Gray8Rgb g2rgb = new Gray8Rgb();
             g2rgb.push(i);
@@ -56,6 +58,7 @@ public class DigitalImageProcessing {
             //coloredFileImage is a file where you want to store the result create it yourself if required
             conv.toFile((RgbImage)g2rgb.getFront(), new File("./result").getCanonicalPath());
         } catch (Throwable e) {
+          //  System.out.println("ERROR");
             throw new IllegalStateException(e);
         }
         return faces;
